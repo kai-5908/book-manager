@@ -74,8 +74,15 @@ checksum = "c042108f3ed77fd83760a5fd79b53be043192bb3b9dba91d8c574c0ada7850c8"
 name = "api"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "axum",
+ "derive-new",
+ "kernel",
  "registry",
+ "serde",
+ "shared",
+ "thiserror",
+ "uuid",
 ]
 
 [[package]]
