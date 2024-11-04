@@ -1,10 +1,13 @@
 use std::sync::Arc;
 
-use adapter::{database::ConnectionPool, repository::health::HealthCheckRepositoryImpl, repository::book::BookRepositoryImpl};
-use kernel::repository::{health::HealthCheckRepository, book::BookRepository};
+use adapter::{
+    database::ConnectionPool, repository::book::BookRepositoryImpl,
+    repository::health::HealthCheckRepositoryImpl,
+};
+use kernel::repository::{book::BookRepository, health::HealthCheckRepository};
 
 #[derive(Clone)]
-pub struct  AppRegistry {
+pub struct AppRegistry {
     health_check_repository: Arc<dyn HealthCheckRepository>,
     book_repository: Arc<dyn BookRepository>,
 }
@@ -15,7 +18,7 @@ impl AppRegistry {
         let book_repository = Arc::new(BookRepositoryImpl::new(pool.clone()));
         Self {
             health_check_repository,
-            book_repository
+            book_repository,
         }
     }
 

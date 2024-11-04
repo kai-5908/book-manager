@@ -13,7 +13,7 @@ fn make_pg_connect_options(cfg: &DatabaseConfig) -> PgConnectOptions {
 }
 
 #[derive(Clone)]
-pub struct  ConnectionPool(PgPool);
+pub struct ConnectionPool(PgPool);
 
 impl ConnectionPool {
     pub fn new(pool: PgPool) -> Self {
