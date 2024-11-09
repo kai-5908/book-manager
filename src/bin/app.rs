@@ -1,20 +1,20 @@
 use std::net::{Ipv4Addr, SocketAddr};
 
 use adapter::database::connection_database_with;
+use anyhow::Context;
 use anyhow::{Ok, Result};
 use api::route::{book::build_book_routers, health::build_health_check_routers};
 use axum::Router;
 use registry::AppRegistry;
 use shared::config::AppConfig;
-use tokio::net::TcpListener;
 use shared::env::{which, Environment};
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::EnvFilter;
-use anyhow::Context;
+use tokio::net::TcpListener;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tower_http::LatencyUnit;
 use tracing::Level;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
+use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -48,7 +48,7 @@ async fn bootstrap() -> Result<()> {
     axum::serve(listener, app)
         .await
         .context("Unexpected error happened in server")
-        .inspect_err(|e|{
+        .inspect_err(|e| {
             tracing::error!(
                 error.cause_chain = ?e,
                 error.message = %e,

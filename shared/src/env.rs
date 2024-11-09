@@ -9,7 +9,7 @@ pub enum Environment {
     Production,
 }
 
-pub fn which () -> Environment {
+pub fn which() -> Environment {
     #[cfg(debug_assertions)]
     let default_env = Environment::Development;
     #[cfg(not(debug_assertions))]
