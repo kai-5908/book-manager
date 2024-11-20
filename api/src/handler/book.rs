@@ -5,6 +5,7 @@ use axum::{
     Json,
 };
 use registry::AppRegistry;
+use shared::error::AppResult;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -24,31 +25,27 @@ impl IntoResponse for AppError {
 pub async fn register_book(
     State(registry): State<AppRegistry>,
     Json(req): Json<CreateBookRequest>,
-) -> Result<StatusCode, AppError> {
+) -> AppResult<()> {
     registry
         .book_repository()
         .create(req.into())
         .await
         .map(|_| StatusCode::CREATED)
-        .map_err(AppError::from)
 }
 
-pub async fn show_book_list(
-    State(registry): State<AppRegistry>,
-) -> Result<Json<Vec<BookResponse>>, AppError> {
+pub async fn show_book_list(State(registry): State<AppRegistry>) -> AppResult<()> {
     registry
         .book_repository()
         .find_all()
         .await
         .map(|v| v.into_iter().map(BookResponse::from).collect::<Vec<_>>())
         .map(Json)
-        .map_err(AppError::from)
 }
 
 pub async fn show_book(
     Path(book_id): Path<Uuid>,
     State(registry): State<AppRegistry>,
-) -> Result<Json<BookResponse>, AppError> {
+) -> AppResult<()> {
     registry
         .book_repository()
         .find_by_id(book_id)
@@ -57,5 +54,4 @@ pub async fn show_book(
             Some(bc) => Ok(Json(bc.into())),
             None => Err(anyhow::anyhow!("The specific book was not found")),
         })
-        .map_err(AppError::from)
 }
