@@ -20,7 +20,9 @@ pub async fn register_book(
         .map(|_| StatusCode::CREATED)
 }
 
-pub async fn show_book_list(State(registry): State<AppRegistry>) -> Result<Json<Vec<BookResponse>>, AppError> {
+pub async fn show_book_list(
+    State(registry): State<AppRegistry>,
+) -> Result<Json<Vec<BookResponse>>, AppError> {
     registry
         .book_repository()
         .find_all()

@@ -1,6 +1,9 @@
 use async_trait::async_trait;
 use derive_new::new;
-use kernel::model::{book::{event::CreateBook, Book}, id::BookId};
+use kernel::model::{
+    book::{event::CreateBook, Book},
+    id::BookId,
+};
 use kernel::repository::book::BookRepository;
 use shared::error::{AppError, AppResult};
 
