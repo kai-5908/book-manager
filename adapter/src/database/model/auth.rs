@@ -8,7 +8,7 @@ use kernel::model::{
 
 use crate::redis::model::{RedisKey, RedisValue};
 
-pub struct UserItem{
+pub struct UserItem {
     pub user_id: UserId,
     pub password_hash: String,
 }
@@ -59,7 +59,7 @@ impl TryFrom<String> for AuthorizedUserId {
     type Error = AppError;
 
     fn try_from(s: String) -> AppResult<Self> {
-        Ok(Self(UserId::from_str(&s).map_err(|e|{
+        Ok(Self(UserId::from_str(&s).map_err(|e| {
             AppError::ConversionEntityError(e.to_string())
         })?))
     }

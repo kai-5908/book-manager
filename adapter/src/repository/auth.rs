@@ -16,7 +16,7 @@ use crate::{
         model::auth::{from, AuthorizationKey, AuthorizedUserId, UserItem},
         ConnectionPool,
     },
-    redis::RedisClient
+    redis::RedisClient,
 };
 
 #[derive(new)]
@@ -33,14 +33,13 @@ impl AuthRepository for AuthRepositoryImpl {
         access_token: &AccessToken,
     ) -> AppResult<Option<UserId>> {
         let key: AuthorizationKey = access_token.into();
-        self.kv.get(&key).await.map(|x| x.map(AuthorizedUserId::into_inner))
+        self.kv
+            .get(&key)
+            .await
+            .map(|x| x.map(AuthorizedUserId::into_inner))
     }
 
-    async fn verify_user(
-        &self,
-        email: &str,
-        password: &str,
-    ) -> AppResult<UserId> {
+    async fn verify_user(&self, email: &str, password: &str) -> AppResult<UserId> {
         let user_item = sqlx::query_as!(
             UserItem,
             r#"
@@ -52,7 +51,7 @@ impl AuthRepository for AuthRepositoryImpl {
         .fetch_one(self.db.inner_ref())
         .await
         .map_err(AppError::SpecificOperationError)?;
-        
+
         let valid = bcrypt::verify(password, &user_item.password_hash)?;
         if !valid {
             return Err(AppError::UnauthenticatedError);
@@ -61,10 +60,7 @@ impl AuthRepository for AuthRepositoryImpl {
         Ok(user_item.user_id)
     }
 
-    async fn create_token(
-        &self,
-        event: CreateToken,
-    ) -> AppResult<AccessToken> {
+    async fn create_token(&self, event: CreateToken) -> AppResult<AccessToken> {
         let (key, value) = from(event);
         self.kv.set_ex(&key, &value, self.ttl).await?;
         Ok(key.into())

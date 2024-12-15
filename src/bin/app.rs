@@ -1,9 +1,12 @@
-use std::{net::{Ipv4Addr, SocketAddr}, sync::Arc};
+use std::{
+    net::{Ipv4Addr, SocketAddr},
+    sync::Arc,
+};
 
 use adapter::{database::connection_database_with, redis::RedisClient};
 use anyhow::Context;
 use anyhow::{Ok, Result};
-use api::route::{book::build_book_routers, health::build_health_check_routers, auth};
+use api::route::{auth, book::build_book_routers, health::build_health_check_routers};
 use axum::Router;
 use registry::AppRegistry;
 use shared::config::AppConfig;

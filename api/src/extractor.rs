@@ -1,7 +1,7 @@
 use anyhow::Ok;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
-use axum ::{async_trait, RequestPartsExt};
+use axum::{async_trait, RequestPartsExt};
 use axum_extra::headers::authorization::Bearer;
 use axum_extra::headers::Authorization;
 use axum_extra::TypedHeader;
@@ -54,6 +54,6 @@ impl FromRequestParts<AppRegistry> for AuthorizedUser {
             .await?
             .ok_or(AppError::UnauthenticatedError)?;
 
-        Ok(Self {access_token, user})
+        Ok(Self { access_token, user })
     }
 }

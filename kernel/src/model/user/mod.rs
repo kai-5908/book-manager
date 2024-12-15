@@ -3,7 +3,7 @@ use crate::model::{id::UserId, role::Role};
 pub mod event;
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct User{
+pub struct User {
     pub id: UserId,
     pub name: String,
     pub email: String,

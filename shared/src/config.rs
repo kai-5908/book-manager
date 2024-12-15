@@ -22,10 +22,10 @@ impl AppConfig {
         let auth = AuthConfig {
             ttl: std::env::var("AUTH_TOKEN_TTL")?.parse::<u64>()?,
         };
-        Ok(Self { 
+        Ok(Self {
             database,
             redis,
-            auth
+            auth,
         })
     }
 }
@@ -44,5 +44,5 @@ pub struct RedisConfig {
 }
 
 pub struct AuthConfig {
-    pub ttl: u64
+    pub ttl: u64,
 }

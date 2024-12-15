@@ -3,7 +3,7 @@ use crate::model::{id::UserId, role::Role};
 use super::User;
 
 #[derive(Debug)]
-pub struct  CreateUser {
+pub struct CreateUser {
     pub name: String,
     pub email: String,
     pub password: String,
