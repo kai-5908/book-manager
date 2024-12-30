@@ -3,7 +3,7 @@ use kernel::model::auth::event::CreateToken;
 use registry::AppRegistry;
 use shared::error::AppResult;
 
-use crate::model::auth::{AccessTokenResponse, LoginRequest};
+use crate::{model::auth::{AccessTokenResponse, LoginRequest}, extractor::AuthorizedUser};
 
 pub async fn login(
     State(registry): State<AppRegistry>,
@@ -24,6 +24,10 @@ pub async fn login(
     }))
 }
 
-pub async fn logout(State(registry): State<AppRegistry>) -> AppResult<StatusCode> {
-    todo!()
+pub async fn logout(user: AuthorizedUser, State(registry): State<AppRegistry>) -> AppResult<StatusCode> {
+    registry
+        .auth_repository()
+        .delete_token(user.access_token)
+        .await?;
+    Ok(StatusCode::NO_CONTENT)
 }

@@ -1,4 +1,3 @@
-use anyhow::Ok;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
 use axum::{async_trait, RequestPartsExt};
