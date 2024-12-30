@@ -1,8 +1,11 @@
 use async_trait::async_trait;
 use derive_new::new;
 use kernel::model::id::UserId;
-use kernel::model::user::{event::{CreateUser, DeleteUser, UpdateUserPassword, UpdateUserRole}, User};
 use kernel::model::role::Role;
+use kernel::model::user::{
+    event::{CreateUser, DeleteUser, UpdateUserPassword, UpdateUserRole},
+    User,
+};
 use kernel::repository::user::UserRepository;
 use shared::error::{AppError, AppResult};
 
@@ -15,10 +18,7 @@ pub struct UserRepositoryImpl {
 
 #[async_trait]
 impl UserRepository for UserRepositoryImpl {
-    async fn find_current_user(
-        &self,
-        current_user_id: UserId
-    ) -> AppResult<Option<User>> {
+    async fn find_current_user(&self, current_user_id: UserId) -> AppResult<Option<User>> {
         let row = sqlx::query_as!(
             UserRow,
             r#"
@@ -90,16 +90,20 @@ impl UserRepository for UserRepositoryImpl {
         .map_err(AppError::SpecificOperationError)?;
 
         if res.rows_affected() < 1 {
-            return Err(AppError::NoRowsAffectedError("No user has been created".into(),));
+            return Err(AppError::NoRowsAffectedError(
+                "No user has been created".into(),
+            ));
         }
 
-        Ok(User { id: user_id, name: event.name, email: event.email, role})
+        Ok(User {
+            id: user_id,
+            name: event.name,
+            email: event.email,
+            role,
+        })
     }
 
-    async fn update_password(
-        &self,
-        event: UpdateUserPassword,
-    ) -> AppResult<()> {
+    async fn update_password(&self, event: UpdateUserPassword) -> AppResult<()> {
         let mut tx = self.db.begin().await?;
 
         let original_password_hash = sqlx::query!(
@@ -113,23 +117,23 @@ impl UserRepository for UserRepositoryImpl {
         .map_err(AppError::SpecificOperationError)?
         .password_hash;
 
-    verify_password(&event.current_password, &original_password_hash)?;
+        verify_password(&event.current_password, &original_password_hash)?;
 
-    let new_password_hash = hash_password(&event.new_password)?;
-    sqlx::query!(
-        r#"
+        let new_password_hash = hash_password(&event.new_password)?;
+        sqlx::query!(
+            r#"
             UPDATE users SET password_hash = $2 WHERE user_id = $1;
         "#,
-        event.user_id as _,
-        new_password_hash
-    )
-    .execute(&mut *tx)
-    .await
-    .map_err(AppError::SpecificOperationError)?;
+            event.user_id as _,
+            new_password_hash
+        )
+        .execute(&mut *tx)
+        .await
+        .map_err(AppError::SpecificOperationError)?;
 
-    tx.commit().await.map_err(AppError::TransactionError)?;
+        tx.commit().await.map_err(AppError::TransactionError)?;
 
-    Ok(())
+        Ok(())
     }
 
     async fn update_role(&self, event: UpdateUserRole) -> AppResult<()> {
@@ -149,9 +153,7 @@ impl UserRepository for UserRepositoryImpl {
         .map_err(AppError::SpecificOperationError)?;
 
         if res.rows_affected() < 1 {
-            return Err(AppError::EntityNotFound(
-                "Specified user not found".into(),
-            ));
+            return Err(AppError::EntityNotFound("Specified user not found".into()));
         }
 
         Ok(())
@@ -170,9 +172,7 @@ impl UserRepository for UserRepositoryImpl {
         .map_err(AppError::SpecificOperationError)?;
 
         if res.rows_affected() < 1 {
-            return Err(AppError::EntityNotFound(
-                "Specified user not found".into(),
-            ))
+            return Err(AppError::EntityNotFound("Specified user not found".into()));
         }
 
         Ok(())

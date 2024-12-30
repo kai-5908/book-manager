@@ -6,7 +6,7 @@ use std::{
 use adapter::{database::connection_database_with, redis::RedisClient};
 use anyhow::Context;
 use anyhow::{Ok, Result};
-use api::route::{auth, book::build_book_routers, health::build_health_check_routers};
+use api::route::{auth, v1};
 use axum::Router;
 use registry::AppRegistry;
 use shared::config::AppConfig;
@@ -31,8 +31,7 @@ async fn bootstrap() -> Result<()> {
     let kv = Arc::new(RedisClient::new(&app_config.redis)?);
     let registry = AppRegistry::new(pool, kv, app_config);
     let app = Router::new()
-        .merge(build_health_check_routers())
-        .merge(build_book_routers())
+        .merge(v1::routes())
         .merge(auth::routes())
         .layer(
             TraceLayer::new_for_http()

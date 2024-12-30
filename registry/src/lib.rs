@@ -4,7 +4,8 @@ use adapter::{
     database::ConnectionPool,
     redis::RedisClient,
     repository::{
-        auth::AuthRepositoryImpl, book::BookRepositoryImpl, health::HealthCheckRepositoryImpl, user::UserRepositoryImpl
+        auth::AuthRepositoryImpl, book::BookRepositoryImpl, health::HealthCheckRepositoryImpl,
+        user::UserRepositoryImpl,
     },
 };
 use kernel::repository::{
