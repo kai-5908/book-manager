@@ -10,6 +10,7 @@ use shared::error::{AppError, AppResult};
 
 use crate::{
     extractor::AuthorizedUser,
+    model::checkout::CheckoutsResponse,
     model::user::{
         CreateUserRequest, UpdateUserPasswordRequest, UpdateUserPasswordRequestWithUserId,
         UpdateUserRoleRequest, UpdateUserRoleRequestWithUserId, UserResponse, UsersResponse,
@@ -98,4 +99,16 @@ pub async fn change_password(
         .await?;
 
     Ok(StatusCode::OK)
+}
+
+pub async fn get_checkouts(
+    user: AuthorizedUser,
+    State(registry): State<AppRegistry>,
+) -> AppResult<Json<CheckoutsResponse>> {
+    registry
+        .checkout_repository()
+        .find_unreturned_by_user_id(user.id())
+        .await
+        .map(CheckoutsResponse::from)
+        .map(Json)
 }

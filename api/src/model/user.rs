@@ -1,6 +1,7 @@
 use derive_new::new;
 use garde::Validate;
 use kernel::model::{
+    book::Checkout,
     id::UserId,
     role::Role,
     user::{
@@ -152,6 +153,20 @@ pub struct BookOwner {
 impl From<kernel::model::user::BookOwner> for BookOwner {
     fn from(value: kernel::model::user::BookOwner) -> Self {
         let kernel::model::user::BookOwner { id, name } = value;
+        Self { id, name }
+    }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CheckoutUser {
+    pub id: UserId,
+    pub name: String,
+}
+
+impl From<kernel::model::user::CheckoutUser> for CheckoutUser {
+    fn from(value: kernel::model::user::CheckoutUser) -> Self {
+        let kernel::model::user::CheckoutUser { id, name } = value;
         Self { id, name }
     }
 }
