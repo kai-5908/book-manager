@@ -1134,6 +1134,7 @@ dependencies = [
  "shared",
  "sqlx",
  "strum",
+ "utoipa",
  "uuid",
 ]
 

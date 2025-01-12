@@ -6,6 +6,8 @@ use std::{
 use adapter::{database::connection_database_with, redis::RedisClient};
 use anyhow::Context;
 use anyhow::Result;
+#[cfg(debug_assertions)]
+use api::openapi::ApiDoc;
 use api::route::{auth, v1};
 use axum::{http::Method, Router};
 use opentelemetry::global;
@@ -20,6 +22,10 @@ use tracing::{subscriber, Level};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
+#[cfg(debug_assertions)]
+use utoipa::OpenApi;
+#[cfg(debug_assertions)]
+use utoipa_redoc::{Redoc, Servable};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -32,9 +38,9 @@ async fn bootstrap() -> Result<()> {
     let pool = connection_database_with(&app_config.database);
     let kv = Arc::new(RedisClient::new(&app_config.redis)?);
     let registry = Arc::new(AppRegistryImpl::new(pool, kv, app_config));
-    let app = Router::new()
-        .merge(v1::routes())
-        .merge(auth::routes())
+    let router = Router::new().merge(v1::routes()).merge(auth::routes());
+    let router = router.merge(Redoc::with_url("/docs", ApiDoc::openapi()));
+    let app = router
         .layer(cors())
         .layer(
             TraceLayer::new_for_http()
